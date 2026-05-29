@@ -18,7 +18,9 @@
 
         // SSO timeout (ms) — how long to wait for portal response before showing error
         window.SSO_TIMEOUT_MS = 8000;
-        window.DEORIS_SSO_MODE = "module";
+        // Use portal mode so clearcheck.js can bootstrap from verified user claims
+        // without re-exchanging token on this module backend.
+        window.DEORIS_SSO_MODE = "portal";
     </script>
 </head>
 <body>

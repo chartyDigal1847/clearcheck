@@ -16,12 +16,40 @@ class SsoController extends Controller
         private readonly StudentProvisioner $provisioner,
     ) {}
 
+    private function debugLog(string $hypothesisId, string $location, string $message, array $data = []): void
+    {
+        try {
+            $payload = json_encode([
+                'sessionId' => '0cc008',
+                'runId' => 'run6',
+                'hypothesisId' => $hypothesisId,
+                'location' => $location,
+                'message' => $message,
+                'data' => $data,
+                'timestamp' => (int) floor(microtime(true) * 1000),
+            ], JSON_UNESCAPED_SLASHES);
+            if ($payload === false) {
+                return;
+            }
+            file_put_contents('C:/xampp/htdocs/deoris/debug-0cc008.log', $payload . PHP_EOL, FILE_APPEND | LOCK_EX);
+        } catch (\Throwable $e) {
+            // Ignore debug log failures.
+        }
+    }
+
     /**
      * POST /sso/exchange — validate token with DEORIS portal, hydrate session.
      */
     public function exchange(Request $request): JsonResponse
     {
         $token = $request->input('token');
+        // #region agent log
+        $this->debugLog('H19', 'ClearCheck\\SsoController::exchange:entry', 'clearcheck exchange called', [
+            'hasToken' => !empty($token),
+            'hasIdFallback' => $request->filled('id'),
+            'sessionId' => $request->session()->getId(),
+        ]);
+        // #endregion
 
         if (! $token && $request->filled('id')) {
             $portalUser = [
@@ -50,22 +78,36 @@ class SsoController extends Controller
             return $this->devExchange($request);
         }
 
-        $response = $this->deorisHttp($token)->post(
-            rtrim(config('services.auth.url', 'https://deoris.test'), '/')
-            .config('services.auth.sso_exchange_path', '/api/v1/sso/exchange'),
-            ['token' => $token]
-        );
+        $response = $this->exchangePortalTokenWithRetry($token);
+        // #region agent log
+        $this->debugLog('H19', 'ClearCheck\\SsoController::exchange:portalResponse', 'clearcheck portal exchange response', [
+            'status' => $response->status(),
+            'ok' => $response->ok(),
+        ]);
+        // #endregion
 
         if (! $response->ok()) {
+            // #region agent log
+            $this->debugLog('H19', 'ClearCheck\\SsoController::exchange:invalidToken', 'clearcheck exchange rejected token', [
+                'status' => $response->status(),
+            ]);
+            // #endregion
             Log::warning('[ClearCheck][SSO] Exchange failed', ['status' => $response->status()]);
 
-            return response()->json(['error' => 'Invalid SSO token'], 401);
+            $status = $response->status() >= 500 ? 503 : 401;
+            $error = $response->status() >= 500 ? 'SSO service unavailable' : 'Invalid SSO token';
+            return response()->json(['error' => $error], $status);
         }
 
         $data = $response->json();
         $portalUser = $data['user'] ?? $data['data']['user'] ?? null;
 
         if (empty($portalUser['id'])) {
+            // #region agent log
+            $this->debugLog('H19', 'ClearCheck\\SsoController::exchange:invalidPayload', 'clearcheck payload missing user id', [
+                'hasPortalUser' => !empty($portalUser),
+            ]);
+            // #endregion
             return response()->json(['error' => 'Invalid SSO response'], 401);
         }
 
@@ -78,6 +120,13 @@ class SsoController extends Controller
 
         PortalSession::hydrate($request, $portalUser, $role);
         $this->provisioner->provision($role, $portalUser);
+        // #region agent log
+        $this->debugLog('H19', 'ClearCheck\\SsoController::exchange:sessionHydrated', 'clearcheck session hydrated after exchange', [
+            'ssoId' => (string) $portalUser['id'],
+            'role' => $role,
+            'sessionId' => $request->session()->getId(),
+        ]);
+        // #endregion
 
         return response()->json([
             'access_token' => null,
@@ -134,6 +183,32 @@ class SsoController extends Controller
         }
 
         return $client;
+    }
+
+    private function exchangePortalTokenWithRetry(string $token)
+    {
+        $url = rtrim(config('services.auth.url', 'https://deoris.test'), '/')
+            .config('services.auth.sso_exchange_path', '/api/v1/sso/exchange');
+
+        $lastResponse = null;
+        for ($attempt = 1; $attempt <= 3; $attempt++) {
+            $response = $this->deorisHttp($token)->post($url, ['token' => $token]);
+            $lastResponse = $response;
+
+            // #region agent log
+            $this->debugLog('H19', 'ClearCheck\\SsoController::exchangePortalTokenWithRetry', 'clearcheck portal exchange attempt', [
+                'attempt' => $attempt,
+                'status' => $response->status(),
+                'ok' => $response->ok(),
+            ]);
+            // #endregion
+
+            if ($response->ok() || ($response->status() !== 429 && $response->status() < 500)) {
+                return $response;
+            }
+        }
+
+        return $lastResponse;
     }
 
     private function redirectUrlByRole(string $role): string
