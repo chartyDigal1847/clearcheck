@@ -1,0 +1,55 @@
+/* ClearCheck clearanceport — DEORIS / EntryEase alignment */
+
+:root {
+    --bg: #f4f6f9;
+    --panel: #ffffff;
+    --text: #1e2530;
+    --muted: #6b7a8d;
+    --line: #e8ecf0;
+    --primary: #7c3041;
+    --primary-2: #9b3d50;
+}
+
+body {
+    background: var(--bg) !important;
+    font-size: 15px;
+}
+
+.app-header {
+    background: linear-gradient(135deg, #7c3041 0%, #9b3d50 100%) !important;
+    color: #fff !important;
+}
+
+.app-brand,
+.app-brand-name {
+    color: #fff !important;
+}
+
+.app-brand-sub {
+    color: rgba(255, 255, 255, 0.82) !important;
+}
+
+.app-brand-badge {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+    border-radius: 9px !important;
+}
+
+.top-action {
+    padding: 7px 12px !important;
+    font-size: 0.875rem !important;
+}
+
+.card {
+    border-radius: 12px !important;
+    box-shadow: 0 1px 4px rgba(15, 22, 35, 0.06), 0 8px 24px rgba(15, 22, 35, 0.08) !important;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #7c3041 0%, #9b3d50 100%) !important;
+    color: #fff !important;
+}
+
+.privacy-notice:not(.compact):not(.status-notice) {
+    display: none !important;
+}

@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="dev-role" content="admin">
     <title>ClearCheck — Clearance Management</title>
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ asset('css/clearcheck.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/deoris-module-theme.css') }}?v={{ file_exists(public_path('css/deoris-module-theme.css')) ? filemtime(public_path('css/deoris-module-theme.css')) : 1 }}">
+    <link rel="stylesheet" href="{{ asset('css/clearcheck-entryease.css') }}?v={{ file_exists(public_path('css/clearcheck-entryease.css')) ? filemtime(public_path('css/clearcheck-entryease.css')) : 1 }}">
     <script>
         // ── Module configuration ──────────────────────────────────────────
         // API base URL — this module's own origin

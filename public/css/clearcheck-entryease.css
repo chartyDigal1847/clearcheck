@@ -1,0 +1,11 @@
+/* ClearCheck SSO loader — match DEORIS module theme */
+
+#clearcheck-root {
+    background: #f4f6f9 !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+#clearcheck-loader p {
+    color: #7c3041 !important;
+    font-size: 15px !important;
+}

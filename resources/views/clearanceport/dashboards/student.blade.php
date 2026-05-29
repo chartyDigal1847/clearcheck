@@ -19,12 +19,12 @@
 
 <section class="page active">
     @if(session('success'))
-        <div class="privacy-notice" style="background:#d4edda;color:#155724;border-color:#c3e6cb;">
+        <div class="privacy-notice status-notice" style="background:#d4edda;color:#155724;border-color:#c3e6cb;">
             <i class="fa-solid fa-check-circle"></i> {{ session('success') }}
         </div>
     @endif
     @if(session('error'))
-        <div class="privacy-notice" style="background:#f8d7da;color:#721c24;border-color:#f5c6cb;">
+        <div class="privacy-notice status-notice" style="background:#f8d7da;color:#721c24;border-color:#f5c6cb;">
             <i class="fa-solid fa-exclamation-circle"></i> {{ session('error') }}
         </div>
     @endif

@@ -11,6 +11,8 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/clearanceport.css') }}?v={{ filemtime(public_path('css/clearanceport.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/deoris-module-theme.css') }}?v={{ filemtime(public_path('css/deoris-module-theme.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/clearanceport-entryease.css') }}?v={{ filemtime(public_path('css/clearanceport-entryease.css')) }}">
 </head>
 <body>
     <div class="app-shell">
