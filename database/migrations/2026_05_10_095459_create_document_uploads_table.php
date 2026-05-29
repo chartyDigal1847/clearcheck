@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        // ✅ FIX: Skip if table already exists (prevents "Base table already exists" error
+        //    when the table was created manually or by a previous incomplete migration run).
+        if (Schema::hasTable('document_uploads')) {
+            return;
+        }
+
+        Schema::create('document_uploads', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('student_id')->constrained()->onDelete('cascade');
+            $table->string('document_type');
+            $table->string('file_path');
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->text('rejection_reason')->nullable();
+            $table->foreignId('reviewed_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->timestamp('reviewed_at')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('document_uploads');
+    }
+};
