@@ -26,7 +26,7 @@
 
 html,
 body {
-    font-family: 'DM Sans', sans-serif;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
     background: var(--cream);
     color: var(--ink);
     min-height: 100vh;
@@ -62,7 +62,7 @@ body {
     color: var(--burgundy);
     font-weight: 700;
     font-size: 15px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
 
 .cc-error-text {
