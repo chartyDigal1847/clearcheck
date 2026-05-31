@@ -254,7 +254,7 @@
                 <li class="upload-item">
                     <div class="info">
                         <div class="document-name">No documents uploaded yet</div>
-                        <div class="uploaded-date">Click "Upload New Document" to get started</div>
+                        <div class="uploaded-date">No documents uploaded.</div>
                     </div>
                 </li>
                 @endforelse
